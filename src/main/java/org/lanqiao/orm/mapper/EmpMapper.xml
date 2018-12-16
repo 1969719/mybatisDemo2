@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--配置二级缓存框架-->
+<mapper namespace="org.lanqiao.orm.mapper.EmpMapper">
+    <cache type="org.mybatis.caches.ehcache.EhcacheCache"
+    eviction="FIFO"
+    flushInterval="60000"
+    size="512"
+    readOnly="true"/>
+<select id="selectEmpById" resultType="org.lanqiao.orm.jopo.Emp" parameterType="int">
+    select * from emp where empno = #{empno}
+</select>
+    <select id="selectEmpList" resultType="org.lanqiao.orm.jopo.Emp">
+    select * from emp
+</select>
+    <select id="selectEmpListCondition" resultType="org.lanqiao.orm.jopo.Emp" parameterType="map">
+    select* from emp where job=#{job} and sal>#{sal} and deptno=#{deptno}
+</select>
+    <!--</select>-->
+    <!--<select id="selectEmpListCondition" resultType="org.lanqiao.orm.jopo.Emp">-->
+    <!--select* from emp where job=#{param1} and sal>#{param2} and deptno=#{param3}-->
+<!--</select>-->
+    <resultMap id="oneToMany2" type="org.lanqiao.orm.jopo.Dept">
+        <id column="deptno" property="deptno"></id>
+        <result column="dname" property="dname"></result>
+        <result column="loc" property="loc"></result>
+        <collection property="empSet" ofType="org.lanqiao.orm.jopo.Emp" select="selectEmpByDeptno" column="deptno">
+            <id column="empno" property="empno"></id>
+            <result column="ename" property="ename"></result>
+            <result column="job" property="job"></result>
+            <result column="sal" property="sal"></result>
+            <result column="hiredate" property="hiredate"></result>
+            <result column="deptno" property="deptno"></result>
+        </collection>
+    </resultMap>
+    <!--   一对多查询   -->
+    <!--<select id="selectDeptAndEmpByDeptno" resultMap="oneToMany">-->
+        <!--select* from emp e,dept d where e.deptno=d.deptno and d.deptno=#{deptno}-->
+    <!--</select>-->
+    <!--  一对多单独查询  -->
+    <select id="selectDeptAndEmpByDeptno2" resultMap="oneToMany2">
+        select* from dept where deptno=#{deptno}
+    </select>
+    <select id="selectEmpByDeptno" resultType="org.lanqiao.orm.jopo.Emp">
+        select* from emp where deptno=#{deptno}
+    </select>
+</mapper>
